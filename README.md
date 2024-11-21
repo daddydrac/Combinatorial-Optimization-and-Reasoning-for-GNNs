@@ -10,18 +10,19 @@ Using Graph Neural Networks (GNNs) for combinatorial optimization (CO) offers sp
 ### Explaination of 
 Supervised Learning Labels: For supervised training, you need ground-truth labels:
 
-Routing Paths:
+- Routing Paths: Optimal paths between specific satellite pairs.
 
-Optimal paths between specific satellite pairs.
-Example: ```{"source": 1, "target": 3, "path": [1, 2, 3]}```
-Predicted Failures:
+```{"source": 1, "target": 3, "path": [1, 2, 3]}```
 
-Binary labels indicating whether a link or satellite is likely to fail in the next time step.
-Example: ```{"node_id": 2, "failure": 0}, {"edge": [1, 3], "failure": 1}```
-Fuel-Efficient Adjustments:
+- Predicted Failures: Binary labels indicating whether a link or satellite is likely to fail in the next time step.
 
-Recommendations for satellite repositioning.
-Example: ```{"node_id": 1, "delta_position": [10, -10, 5]}```
+```{"node_id": 2, "failure": 0}, {"edge": [1, 3], "failure": 1}```
+
+- Fuel-Efficient Adjustments: Recommendations for satellite repositioning.
+
+```{"node_id": 1, "delta_position": [10, -10, 5]}```
+
+Generated data model
 
 ```
 {
