@@ -6,3 +6,39 @@ Using Graph Neural Networks (GNNs) for combinatorial optimization (CO) offers sp
 <strong>GNN Role:</strong> Optimize routing paths for satellite-to-satellite communication to minimize latency. Predict failures or disruptions in the network by aggregating historical telemetry and sensor data. 
 
 <strong>Benefit over Baseline:</strong> Traditional heuristics may struggle to handle the dynamic and large-scale nature of constellations, while GNNs can generalize and adapt to evolving network conditions.
+
+### Explaination of 
+Supervised Learning Labels: For supervised training, you need ground-truth labels:
+
+Routing Paths:
+
+Optimal paths between specific satellite pairs.
+Example: ```{"source": 1, "target": 3, "path": [1, 2, 3]}```
+Predicted Failures:
+
+Binary labels indicating whether a link or satellite is likely to fail in the next time step.
+Example: ```{"node_id": 2, "failure": 0}, {"edge": [1, 3], "failure": 1}```
+Fuel-Efficient Adjustments:
+
+Recommendations for satellite repositioning.
+Example: ```{"node_id": 1, "delta_position": [10, -10, 5]}```
+
+```
+{
+  "graphs": [
+    {
+      "nodes": [
+        {"id": 1, "features": {"position": [100, 200, 300], "velocity": [1, 0, -1], "remaining_fuel": 80, "status": 1, "load": 50, "energy": 1000}},
+        {"id": 2, "features": {"position": [200, 300, 400], "velocity": [0, 1, -1], "remaining_fuel": 70, "status": 1, "load": 30, "energy": 900}},
+        {"id": 3, "features": {"position": [300, 400, 500], "velocity": [-1, 0, 1], "remaining_fuel": 60, "status": 1, "load": 40, "energy": 800}}
+      ],
+      "edges": [
+        {"source": 1, "target": 2, "features": {"distance": 150.0, "signal_strength": -50, "bandwidth": 100, "latency": 20}},
+        {"source": 2, "target": 3, "features": {"distance": 170.0, "signal_strength": -55, "bandwidth": 80, "latency": 25}},
+        {"source": 3, "target": 1, "features": {"distance": 200.0, "signal_strength": -60, "bandwidth": 90, "latency": 30}}
+      ]
+    }
+  ]
+}
+
+```
