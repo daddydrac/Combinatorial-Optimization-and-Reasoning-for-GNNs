@@ -3,6 +3,26 @@ Using Graph Neural Networks (GNNs) for combinatorial optimization (CO) offers sp
 
 Notebook has explaination of math used with equations.
 
+### How to use
+
+```docker build -f CPU.Dockerfile -t satgnn .``` # swap CPU. for GPU. if on NVIDIA GPUs
+
+#### GPU
+```docker run -it -d --name satgnn --gpus all -v ${PWD}:/sat_gnn satgnn```
+
+#### CPU
+```docker run -it -d --name satgnn -v ${PWD}:/sat_gnn satgnn```
+
+#### Exec into container and run the code
+
+```docker exec -it satgnn /bin/bash```
+
+```python satellite_gnn.py```
+
+-------------
+
+### Framing the Data Science Problem and Solution 
+
 <strong>Problem:</strong> Managing mega-constellations (e.g., Starlink, OneWeb) involves optimizing communication paths, maintaining orbits, and minimizing fuel usage for adjustments. Why GNNs? Graph Representation: Satellites form a communication network, where nodes represent satellites and edges represent communication links. 
 
 <strong>GNN Role:</strong> Optimize routing paths for satellite-to-satellite communication to minimize latency. Predict failures or disruptions in the network by aggregating historical telemetry and sensor data. 
