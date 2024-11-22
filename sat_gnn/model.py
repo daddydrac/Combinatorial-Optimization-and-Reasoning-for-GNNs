@@ -44,26 +44,27 @@ class EncodeProcessDecode(nn.Module):
         self.decoder = nn.Linear(decoder_in_features, 1, bias=True)
 
     def forward(self, data):
-        x = F.relu(self.encoder(data.x))
-        x = x.float()  # Explicitly cast to float32
-        print(f"Shape after encoder: {x.shape}")
-        
-        x = self.processor(x, data.edge_index, data.edge_attr)
-        x = x.float()  # Explicitly cast to float32
-        print(f"Shape after processor: {x.shape}")
+        x = F.relu(self.encoder(data.x.float()))
+        print(f"Shape after encoder: {x.shape}, dtype: {x.dtype}")
 
+        x = self.processor(x, data.edge_index, data.edge_attr.float())
+        print(f"Shape after processor: {x.shape}, dtype: {x.dtype}")
+
+        # Adjust input to match decoder expectations
         if x.size(1) < self.decoder.in_features:
             padding = torch.zeros(
-                x.size(0), self.decoder.in_features - x.size(1), device=x.device, dtype=torch.float32
+                x.size(0), self.decoder.in_features - x.size(1),
+                device=x.device, dtype=torch.float32
             )
             x = torch.cat([x, padding], dim=1)
         elif x.size(1) > self.decoder.in_features:
             x = x[:, :self.decoder.in_features]
 
-        print(f"Shape before decoder: {x.shape}, Expected: {self.decoder.in_features}")
-        x = x.float()  # Ensure decoder input is float32
-        x = self.decoder(x)
+        print(f"Shape before decoder: {x.shape}, Expected: {self.decoder.in_features}, dtype: {x.dtype}")
+        x = self.decoder(x.float())  # Ensure float32
         return torch.sigmoid(x)
+
+
 
 
 # Actor-Critic Framework
@@ -168,25 +169,25 @@ def parse_graph_data(json_data):
 
             node_features = torch.tensor(
                 [flatten_features(node["features"]) for node in nodes],
-                dtype=torch.float
+                dtype=torch.float32  # Force float32
+            )
+
+            edge_features = torch.tensor(
+                [flatten_features(edge["features"]) for edge in edges],
+                dtype=torch.float32  # Force float32
             )
 
             edge_indices = torch.tensor(
                 [[edge["source"] - 1, edge["target"] - 1] for edge in edges],
-                dtype=torch.long
+                dtype=torch.long  # Long type for indices
             ).t().contiguous()
 
-            edge_features = torch.tensor(
-                [flatten_features(edge["features"]) for edge in edges],
-                dtype=torch.float
-            )
-
-            y = torch.tensor([label], dtype=torch.float)
+            y = torch.tensor([label], dtype=torch.float32)  # Force float32
 
             graph = Data(
-                x=node_features.float(),
+                x=node_features,
                 edge_index=edge_indices,
-                edge_attr=edge_features.float(),
+                edge_attr=edge_features,
                 y=y
             )
             graphs.append(graph)
@@ -197,6 +198,8 @@ def parse_graph_data(json_data):
             print(f"Unexpected error parsing graph: {e}")
 
     return graphs
+
+
 
 
 def create_dataloader(json_data, batch_size=1):
@@ -250,23 +253,28 @@ if __name__ == "__main__":
         json_data = json.load(f)
 
     loader = create_dataloader(json_data, batch_size=1)
+
+    # Check the structure and dimensions of the first graph in the DataLoader
     for data in loader:
         print(f"Graph data: x shape: {data.x.shape}, edge_attr shape: {data.edge_attr.shape}")
         break
 
-    first_graph = next(iter(loader))
+    # Ensure the first graph is on the correct device (CPU or GPU)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    first_graph = first_graph.to(device)
+    first_graph = next(iter(loader)).to(device)
 
+    # Extract node and edge input dimensions from the first graph
     node_in_dim = first_graph.x.size(1)
     edge_in_dim = first_graph.edge_attr.size(1)
 
+    # Initialize the EncodeProcessDecode model
     model = EncodeProcessDecode(
         node_in_dim=node_in_dim,
         edge_in_dim=edge_in_dim,
         hidden_dim=16,
-        decoder_in_features=16
+        decoder_in_features=16  # Ensure this matches the output dim of the processor
     ).to(device)
+
 
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     criterion = nn.BCELoss()

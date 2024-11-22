@@ -1,11 +1,13 @@
-# Combinatorial Optimization and Reasoning or GNNs
+# Combinatorial Optimization and Reasoning for GNNs
 Using Graph Neural Networks (GNNs) for combinatorial optimization (CO) offers specific advantages for problems where traditional methods struggle due to complexity, data dependency, or the need for real-time solutions.
 
-Notebook has explaination of math used with equations.
+Notebook has explaination of math used with equations here: https://github.com/daddydrac/Combinatorial-Optimization-and-Reasoning-for-GNNs/tree/main.
 
 ### How to use
 
-```docker build -f CPU.Dockerfile -t satgnn .``` # swap CPU. for GPU. if on NVIDIA GPUs
+```docker build -f CPU.Dockerfile -t satgnn .``` 
+
+(swap CPU. for GPU. if on NVIDIA GPUs)
 
 #### GPU
 ```docker run -it -d --name satgnn --gpus all -v ${PWD}:/sat_gnn satgnn```
@@ -17,7 +19,9 @@ Notebook has explaination of math used with equations.
 
 ```docker exec -it satgnn /bin/bash```
 
-```python satellite_gnn.py```
+### Train model 
+
+```python model.py```
 
 -------------
 

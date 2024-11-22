@@ -1,6 +1,7 @@
 import random
 import copy
 import json
+import numpy as np
 
 def write_json_to_file(data, filename):
     """
@@ -35,10 +36,10 @@ def generate_graph_samples_with_labels(baseline, N, variation=0.2):
     def apply_variation(value, variation):
         if isinstance(value, (int, float)):
             delta = value * variation
-            return value + random.uniform(-delta, delta)
+            return float(value + np.random.uniform(-delta, delta))  # Force float32
         elif isinstance(value, list):
             return [apply_variation(v, variation) for v in value]
-        return value  # Return as is for unsupported types
+        return value
 
     def compute_label(graph):
         """
@@ -99,7 +100,7 @@ baseline_graph = {
 }
 
 # Generate 1000 graph samples with labels
-generated_samples = generate_graph_samples_with_labels(baseline_graph, N=10)
+generated_samples = generate_graph_samples_with_labels(baseline_graph, N=100)
 
 # Save the data to a JSON file
 write_json_to_file(generated_samples, "generated_samples.json")
