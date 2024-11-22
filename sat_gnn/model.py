@@ -81,6 +81,7 @@ class ActorCritic(nn.Module):
 
 
 # Supervised Training Function
+# Supervised Training Function
 def train_supervised(model, loader, optimizer, criterion, epochs):
     model.train()
     for epoch in range(epochs):
@@ -95,15 +96,23 @@ def train_supervised(model, loader, optimizer, criterion, epochs):
 
             optimizer.zero_grad()
             data = data.to(next(model.parameters()).device)
-            out = model(data).squeeze(-1)
-            loss = criterion(out, data.y)
+            
+            # Forward pass
+            out = model(data).squeeze(-1)  # Node-level predictions
+            
+            # Aggregate node-level predictions to graph-level
+            out = out.mean()  # Take the mean of node-level predictions for the entire graph
+            
+            # Compute loss
+            loss = criterion(out.unsqueeze(0), data.y)  # Match dimensions with graph-level label
             loss.backward()
             optimizer.step()
 
             total_loss += loss.item()
-            y_true.extend(data.y.cpu().numpy())
-            y_pred.extend((out > 0.5).cpu().numpy())
+            y_true.append(data.y.item())  # Graph-level label
+            y_pred.append(out.item() > 0.5)  # Binary prediction at graph-level
 
+        # Metrics for graph-level classification
         acc = accuracy_score(y_true, y_pred)
         f1 = f1_score(y_true, y_pred)
         print(f"Epoch {epoch + 1}, Loss: {total_loss:.4f}, Accuracy: {acc:.4f}, F1 Score: {f1:.4f}")
@@ -280,9 +289,9 @@ if __name__ == "__main__":
     criterion = nn.BCELoss()
 
     print("Starting supervised training...")
-    train_supervised(model, loader, optimizer, criterion, epochs=10)
+    train_supervised(model, loader, optimizer, criterion, epochs=50)
 
-    save_model(model, optimizer, epoch=10, path="gnn_model.pth")
+    save_model(model, optimizer, epoch=50, path="gnn_model.pth")
 
     print("Starting reinforcement learning...")
     actor_critic = ActorCritic(hidden_dim=16, action_dim=4).to(device)

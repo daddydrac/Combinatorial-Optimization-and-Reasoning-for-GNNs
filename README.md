@@ -1,5 +1,5 @@
 # Combinatorial Optimization and Reasoning for GNNs
-Using Graph Neural Networks (GNNs) for combinatorial optimization (CO) offers specific advantages for problems where traditional methods struggle due to complexity, data dependency, or the need for real-time solutions.
+Using Graph Neural Networks (GNNs) for combinatorial optimization (CO) offers specific advantages for problems where traditional methods struggle due to complexity, data dependency, or the need for real-time solutions. Only works and tested on Linux.
 
 Notebook has explaination of math used with equations here: https://github.com/daddydrac/Combinatorial-Optimization-and-Reasoning-for-GNNs/tree/main.
 
