@@ -21,6 +21,12 @@ Using Graph Neural Networks (GNNs) for combinatorial optimization (CO) offers sp
 
 ```docker exec -it satgnn /bin/bash```
 
+```cd sat_gen```
+
+### Generate Satellite Data
+
+```python data_gen.py```
+
 ### Train model 
 
 ```python model.py```
