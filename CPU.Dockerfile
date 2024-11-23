@@ -31,3 +31,5 @@ COPY sat_gnn /sat_gnn
 
 # keep alive
 CMD ["tail", "-f", "/dev/null"]
+
+# tested and works on linux!
